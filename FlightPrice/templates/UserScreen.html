@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flight Price Results</title>
+    <style>
+        :root {
+            --bg: #f3f6ff;
+            --panel: #ffffff;
+            --accent: #2563eb;
+            --accent-soft: #eff6ff;
+            --text: #0f172a;
+            --muted: #475569;
+            --border: #dbeafe;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: linear-gradient(180deg, #f8fbff 0%, #eef3fb 100%);
+            color: var(--text);
+            padding: 24px;
+            display: flex;
+            justify-content: center;
+        }
+        .card {
+            width: min(1120px, 100%);
+            background: var(--panel);
+            border-radius: 30px;
+            box-shadow: 0 35px 100px rgba(15,23,42,.12);
+            overflow: hidden;
+            border: 1px solid rgba(148,163,184,.16);
+        }
+        .hero {
+            padding: 34px 40px;
+            background: linear-gradient(135deg, #eef5ff 0%, #ffffff 100%);
+            border-bottom: 1px solid rgba(148,163,184,.14);
+        }
+        .hero h2 {
+            margin: 0;
+            font-size: 2.2rem;
+            line-height: 1.05;
+        }
+        .hero p {
+            margin: 12px 0 0;
+            color: var(--muted);
+            font-size: 1rem;
+            line-height: 1.75;
+            max-width: 680px;
+        }
+        .content {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 26px;
+            padding: 32px 40px 40px;
+        }
+        .summary-card,
+        .info-card {
+            background: #ffffff;
+            border-radius: 24px;
+            border: 1px solid var(--border);
+            padding: 26px;
+            box-shadow: 0 20px 50px rgba(15,23,42,.08);
+        }
+        .summary-card {
+            display: flex;
+            flex-direction: column;
+            gap: 22px;
+        }
+        .summary-card .label {
+            font-size: .85rem;
+            letter-spacing: .1em;
+            color: var(--muted);
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+        .price-output {
+            display: grid;
+            gap: 16px;
+        }
+        .price-output .price {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--accent);
+            margin: 0;
+        }
+        .price-output .detail {
+            color: var(--muted);
+            line-height: 1.8;
+        }
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 16px;
+        }
+        .metric {
+            padding: 18px 20px;
+            border-radius: 20px;
+            background: var(--accent-soft);
+            border: 1px solid rgba(37,99,235,.12);
+        }
+        .metric .label { font-size:.8rem; color:#334155; margin-bottom:8px; }
+        .metric .value { font-size:1.3rem; font-weight:700; color:#0f172a; }
+        .info-card h3 {
+            margin: 0 0 16px;
+            font-size: 1.1rem;
+        }
+        .info-card ul {
+            margin: 0;
+            padding-left: 20px;
+            color: var(--muted);
+            line-height: 1.8;
+        }
+        .info-card li { margin-bottom: 10px; }
+        .result-block {
+            background: #f8fbff;
+            border: 1px solid rgba(59,130,246,.15);
+            border-radius: 18px;
+            padding: 22px;
+        }
+        .result-block .pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: #2563eb;
+            color: white;
+            border-radius: 999px;
+            padding: 10px 16px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            font-size: .85rem;
+        }
+        .info-note {
+            margin-top: 18px;
+            background: #eff6ff;
+            border: 1px solid rgba(37,99,235,.15);
+            border-radius: 18px;
+            padding: 16px 18px;
+            color: #334155;
+            font-size: .95rem;
+            line-height: 1.55;
+        }
+        .info-note p {
+            margin: 0 0 10px;
+            font-size: .95rem;
+        }
+        .info-note p strong {
+            font-size: 1rem;
+        }
+        .info-note p:last-child {
+            margin-bottom: 0;
+        }
+        .result-block p { margin: 0; color: var(--muted); }
+        .chart img {
+            width: 100%;
+            display: block;
+            border-radius: 22px;
+            margin-top: 18px;
+        }
+        .actions {
+            margin-top: 24px;
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+        .actions a {
+            padding: 14px 22px;
+            border-radius: 16px;
+            background: var(--accent);
+            color: white;
+            text-decoration: none;
+            font-weight: 700;
+        }
+        .actions a.secondary {
+            background: #f8fafc;
+            color: #334155;
+            border: 1px solid rgba(148,163,184,.25);
+        }
+        .empty-state {
+            padding: 24px;
+            border-radius: 24px;
+            background: var(--accent-soft);
+            border: 1px solid rgba(37,99,235,.15);
+            color: var(--muted);
+            line-height: 1.8;
+        }
+        @media (max-width: 980px) {
+            .content { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 680px) {
+            .hero { padding: 28px 24px; }
+            .content { padding: 24px; }
+        }
+    </style>
+    <link rel="stylesheet" href="/static/theme.css">
+</head>
+<body>
+    <div class="card">
+        <div class="hero">
+            <h2>Flight price insight</h2>
+            <p>Results from a model-backed prediction are shown below, along with context from general fare estimates and live market signals.</p>
+        </div>
+        <div class="content">
+            <section class="summary-card">
+                {% if data %}
+                <div class="price-output">
+                    <div class="label">Estimated fare</div>
+                    <div class="price">{{ data|safe }}</div>
+                </div>
+                <div class="metrics">
+                    <div class="metric">
+                        <div class="label">Best model accuracy</div>
+                        <div class="value">Check RMSE / MAE</div>
+                    </div>
+                    <div class="metric">
+                        <div class="label">Market comparison</div>
+                        <div class="value">Live signal + avg price</div>
+                    </div>
+                </div>
+                <div class="actions">
+                    <a href="/PredictPrices">Predict again</a>
+                    <a class="secondary" href="/DatasetCollection">Review data</a>
+                    <a class="secondary" href="/Dashboard">Dashboard</a>
+                    <a class="secondary" href="/Logout">Logout</a>
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <strong>No prediction yet.</strong>
+                    <p>Start by entering your route and travel date on the prediction page. The result area will show your estimated fare along with the model confidence signals.</p>
+                </div>
+                <div class="actions" style="margin-top:18px;">
+                    <a href="/PredictPrices">Start predicting</a>
+                    <a class="secondary" href="/DatasetCollection">See the sample dataset</a>
+                </div>
+                {% endif %}
+            </section>
+            <section class="info-card">
+                <h3>What you can learn here</h3>
+                <ul>
+                    <li>How the predicted fare compares to the average historical price for the selected route.</li>
+                    <li>Which regression models perform best for the dataset.</li>
+                    <li>Why source and destination selection matters for fare accuracy.</li>
+                </ul>
+                {% if graph1b64 %}
+                <div class="chart">
+                    <img src="data:image/png;base64,{{ graph1b64 }}" alt="Prediction chart" />
+                </div>
+                {% endif %}
+            </section>
+        </div>
+    </div>
+</body>
+</html>

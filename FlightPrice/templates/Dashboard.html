@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard</title>
+    <style>
+        body { margin: 0; font-family: Inter, system-ui, sans-serif; background: #f3f6fb; color: #0f172a; }
+        .page { max-width: 1080px; margin: 32px auto; padding: 24px; }
+        .header { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 18px; align-items: center; }
+        .header h1 { margin: 0; font-size: 2rem; }
+        .navbar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+        .nav-link { border-radius: 14px; padding: 12px 18px; text-decoration: none; font-weight: 700; }
+        .nav-link.primary { background: #2563eb; color: white; }
+        .nav-link.secondary { background: #f8fafc; color: #334155; border: 1px solid rgba(148,163,184,.25); }
+        .stats { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 18px; margin-top: 26px; }
+        .stat-card { background: white; border: 1px solid rgba(148,163,184,.18); border-radius: 20px; padding: 22px; box-shadow: 0 20px 45px rgba(15,23,42,.06); }
+        .stat-card h3 { margin: 0 0 10px; color: #334155; font-size: .95rem; text-transform: uppercase; letter-spacing: .08em; }
+        .stat-card p { margin: 0; font-size: 2rem; font-weight: 800; }
+        .panel { margin-top: 26px; display: grid; grid-template-columns: 1.3fr .7fr; gap: 22px; }
+        .panel .card { background: white; padding: 24px; border-radius: 22px; border: 1px solid rgba(148,163,184,.18); box-shadow: 0 20px 45px rgba(15,23,42,.05); }
+        .panel h2 { margin-top: 0; font-size: 1.3rem; }
+        .panel ul { margin: 0; padding-left: 20px; color: #475569; line-height: 1.8; }
+        .panel li { margin-bottom: 12px; }
+        .empty-state { padding: 24px; border-radius: 18px; background: #eff6ff; border: 1px solid rgba(37,99,235,.16); color: #334155; }
+        @media (max-width: 900px) { .stats, .panel { grid-template-columns: 1fr; } }
+    </style>
+    <link rel="stylesheet" href="/static/theme.css">
+</head>
+<body>
+    <div class="page">
+        <div class="header">
+            <div>
+                <h1>Welcome back, {{ username }}</h1>
+                <p>Access your model performance insights, retrain workflows, and prediction tools from one place.</p>
+            </div>
+            <div class="navbar">
+                <a class="nav-link secondary" href="/PredictPrices">Predict prices</a>
+                <a class="nav-link secondary" href="/ModelReport">View report</a>
+                <a class="nav-link secondary" href="/TrainML">Retrain model</a>
+                <a class="nav-link secondary" href="/ModelMonitoring">Monitoring</a>
+                <a class="nav-link secondary" href="/AdminPanel">Admin panel</a>
+                <a class="nav-link primary" href="/Logout">Logout</a>
+            </div>
+        </div>
+        {% if messages %}
+            <div class="messages" style="margin: 20px 0;">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}" style="padding: 14px 18px; border-radius: 16px; margin-bottom: 12px; background: #eef2ff; border: 1px solid rgba(59,130,246,.25);">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        <div class="stats">
+            <div class="stat-card">
+                <h3>Best model</h3>
+                <p>{{ best_model }}</p>
+            </div>
+            <div class="stat-card">
+                <h3>Total dataset rows</h3>
+                <p>{{ total_rows }}</p>
+            </div>
+            <div class="stat-card">
+                <h3>Feature count</h3>
+                <p>{{ feature_count }}</p>
+            </div>
+        </div>
+        <div class="panel">
+            <div class="card">
+                <h2>Dashboard summary</h2>
+                {% if report_available %}
+                <p>Your trained model report is available. Navigate to the report page for detailed evaluation metrics and model comparison.</p>
+                <div style="margin-top:16px; display:flex; gap:12px; flex-wrap:wrap;">
+                    <div style="background:#f8fafc; padding:12px 14px; border-radius:12px; border:1px solid rgba(148,163,184,.12);">
+                        <div style="font-weight:700; color:#334155; font-size:.85rem;">Latest production</div>
+                        <div style="font-size:1.25rem; font-weight:800;">{{ best_model }}</div>
+                        {% if best_rmse %}
+                        <div style="margin-top:6px; color:#475569;">RMSE: {{ best_rmse|floatformat:2 }} &nbsp; MAE: {{ best_mae|floatformat:2 }}</div>
+                        {% endif %}
+                    </div>
+                    {% if top_models %}
+                    <div style="background:#fff7ed; padding:12px 14px; border-radius:12px; border:1px solid rgba(245,158,11,.12);">
+                        <div style="font-weight:700; color:#92400e; font-size:.85rem;">Top evaluated</div>
+                        <ul style="margin:8px 0 0 14px; color:#475569;">
+                            {% for m in top_models %}
+                                <li>{{ m.name }} — RMSE {{ m.rmse|floatformat:2 }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+                </div>
+                <ul>
+                    <li>Use the retraining workflow to refresh the production model.</li>
+                    <li>View model performance gain from new training runs.</li>
+                    <li>Compare the selected best-regressor with older candidates.</li>
+                </ul>
+                {% else %}
+                <div class="empty-state">
+                    <strong>No report available yet.</strong>
+                    <p>Train the model once to populate the report and unlock the dashboard insights.</p>
+                </div>
+                {% endif %}
+            </div>
+            <div class="card">
+                <h2>Quick actions</h2>
+                <ul>
+                    <li><strong>Predict prices</strong> using route + date inputs.</li>
+                    <li><strong>Retrain model</strong> after dataset or feature changes.</li>
+                    <li><strong>View report</strong> to inspect RMSE, MAE, and R2.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

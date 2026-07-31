@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flight Price Prediction</title>
+    <style>
+        :root { --bg:#f4f7fb; --card:#ffffff; --accent:#2563eb; --text:#0f172a; --muted:#64748b; }
+        * { box-sizing: border-box; }
+        body { margin:0; font-family: Arial, sans-serif; color:var(--text); min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px; background:linear-gradient(rgba(15,23,42,.45), rgba(15,23,42,.45)), url('https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1600&q=80') center/cover no-repeat; }
+        .card { width:min(860px,100%); background:rgba(255,255,255,.93); border-radius:20px; box-shadow:0 15px 45px rgba(15,23,42,.12); padding:36px; backdrop-filter:blur(4px); }
+        h1 { margin-top:0; font-size:2rem; }
+        .subtitle { color:var(--muted); font-size:1rem; margin-bottom:20px; }
+        .grid { display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:16px; margin-top:24px; }
+        .tile { background:#f8fbff; border:1px solid #dbeafe; border-radius:14px; padding:18px; text-align:center; }
+        .tile a { display:inline-flex; align-items:center; justify-content:center; margin-top:12px; margin-right:8px; padding:10px 16px; color: #2563eb; font-weight:700; text-decoration:none; border-radius:12px; border:1px solid transparent; background:#ffffff; transition: background .18s ease, transform .18s ease; }
+        .tile a:hover { background:#e0efff; transform: translateY(-1px); text-decoration:none; }
+        .tile a.primary { background:#2563eb; color:#fff; }
+        .tile a.primary:hover { background:#1d4ed8; }
+        .pill { display:inline-block; padding:6px 10px; background:#eff6ff; color:#1d4ed8; border-radius:999px; font-size:.85rem; margin-bottom:10px; }
+        @media (max-width: 600px){ .grid{grid-template-columns:1fr;} }
+    </style>
+    <link rel="stylesheet" href="/static/theme.css">
+</head>
+<body>
+    <div class="card">
+        <span class="pill">Smart Travel Planning</span>
+        <h1>Flight Price Prediction</h1>
+        <p class="subtitle">Welcome to the flight price prediction application. Explore the dataset, predict fares, and compare the model estimate with a general market price.</p>
+        <div class="grid">
+            <div class="tile">
+                <h3>Access your account</h3>
+                <a href="/UserLogin" class="primary">Login</a>
+                <a href="/Signup">Sign up</a>
+            </div>
+            <div class="tile">
+                <h3>Explore predictions</h3>
+                <a href="/DatasetCollection">View dataset</a>
+                <a href="/PredictPrices" class="primary">Predict prices</a>
+            </div>
+            <div class="tile">
+                <h3>Model insights</h3>
+                <a href="/ModelReport">View model report</a>
+                <a href="/TrainML" class="primary">Retrain model</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retrain Model</title>
+    <style>
+        :root {
+            --bg: #f3f6ff;
+            --panel: #ffffff;
+            --accent: #2563eb;
+            --accent-soft: #eff6ff;
+            --text: #0f172a;
+            --muted: #475569;
+            --border: #dbeafe;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Inter, system-ui, sans-serif;
+            background: linear-gradient(180deg, #f8fbff 0%, #eef3fb 100%);
+            color: var(--text);
+            padding: 24px;
+        }
+        .page {
+            width: min(1120px, 100%);
+            margin: 0 auto;
+            background: var(--panel);
+            border-radius: 28px;
+            box-shadow: 0 35px 100px rgba(15,23,42,.12);
+            overflow: hidden;
+            border: 1px solid rgba(148,163,184,.16);
+        }
+        .hero {
+            padding: 34px 40px;
+            background: linear-gradient(135deg, #eef5ff 0%, #ffffff 100%);
+            border-bottom: 1px solid rgba(148,163,184,.14);
+        }
+        .hero h1 {
+            margin: 0;
+            font-size: 2.2rem;
+        }
+        .hero p {
+            margin: 12px 0 0;
+            color: var(--muted);
+            line-height: 1.75;
+            max-width: 720px;
+        }
+        .content {
+            padding: 32px 40px 40px;
+            display: grid;
+            gap: 24px;
+        }
+        .summary,
+        .table-panel,
+        .actions {
+            background: #ffffff;
+            border-radius: 22px;
+            border: 1px solid var(--border);
+            box-shadow: 0 20px 50px rgba(15,23,42,.08);
+            padding: 24px;
+        }
+        .summary {
+            display: grid;
+            gap: 16px;
+        }
+        .summary .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            border-radius: 999px;
+            padding: 10px 16px;
+            background: #ecfdf5;
+            color: #166534;
+            font-weight: 700;
+            width: fit-content;
+        }
+        .summary h2 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+        .summary p {
+            margin: 0;
+            color: var(--muted);
+            line-height: 1.8;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 18px;
+        }
+        .stat {
+            background: var(--accent-soft);
+            padding: 20px;
+            border-radius: 18px;
+            border: 1px solid rgba(37,99,235,.12);
+        }
+        .stat .label { font-size: .85rem; color: #334155; margin-bottom: 8px; }
+        .stat .value { font-size: 1.6rem; font-weight: 700; color: var(--text); }
+        .table-panel table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 720px;
+        }
+        .table-panel th,
+        .table-panel td {
+            padding: 14px 16px;
+            border-bottom: 1px solid #e2e8f0;
+            text-align: left;
+        }
+        .table-panel th {
+            background: #f8fbff;
+            color: #0f172a;
+        }
+        .table-panel tr:hover { background: #f8fafc; }
+        .error-box {
+            background: #fff1f2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+            border-radius: 18px;
+            padding: 18px;
+        }
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+        }
+        .actions a {
+            padding: 14px 20px;
+            border-radius: 16px;
+            text-decoration: none;
+            font-weight: 700;
+            color: white;
+            background: var(--accent);
+        }
+        .actions a.secondary {
+            background: #f8fafc;
+            color: #334155;
+            border: 1px solid rgba(148,163,184,.25);
+        }
+        @media (max-width: 900px) {
+            .stats { grid-template-columns: 1fr; }
+            .hero, .content { padding: 24px; }
+        }
+    </style>
+    <link rel="stylesheet" href="/static/theme.css">
+</head>
+<body>
+    <div class="page">
+        <div class="hero">
+            <h1>Retrain Model</h1>
+            <p>This page shows the latest retraining result with a clean summary of the chosen production model and candidate metrics.</p>
+        </div>
+        <div class="content">
+            {% if error_message %}
+            <div class="summary error-box">
+                <strong>Retraining failed</strong>
+                <p>{{ error_message }}</p>
+            </div>
+            {% else %}
+            <div class="summary">
+                <span class="status">Retraining completed</span>
+                <h2>Production model trained: {{ best_model }}</h2>
+                <p>The selected model has been promoted to production and the candidate comparison table below summarizes the retraining results.</p>
+                <div class="stats">
+                    <div class="stat">
+                        <div class="label">RMSE</div>
+                        <div class="value">{{ rmse }}</div>
+                    </div>
+                    <div class="stat">
+                        <div class="label">MAE</div>
+                        <div class="value">{{ mae }}</div>
+                    </div>
+                    <div class="stat">
+                        <div class="label">Training time</div>
+                        <div class="value">{{ training_time }}s</div>
+                    </div>
+                </div>
+            </div>
+            <div class="table-panel">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Model</th>
+                            <th>RMSE</th>
+                            <th>MAE</th>
+                            <th>R²</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for candidate in candidate_models %}
+                        <tr>
+                            <td>{{ candidate.name }}</td>
+                            <td>{{ candidate.rmse }}</td>
+                            <td>{{ candidate.mae }}</td>
+                            <td>{{ candidate.r2 }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% endif %}
+            <div class="actions">
+                <a href="/ModelReport">View model report</a>
+                <a class="secondary" href="/TrainML">Retrain model</a>
+                <a class="secondary" href="/Dashboard">Dashboard</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

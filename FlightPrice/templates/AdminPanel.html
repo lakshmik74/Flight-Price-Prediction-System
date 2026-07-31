@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel | Flight Price</title>
+    <link rel="stylesheet" href="/static/templatemo_style.css">
+    <style>
+        body { margin: 0; font-family: Inter, system-ui, sans-serif; background: #f7f9fc; color: #111827; }
+        .page-container { max-width: 1080px; margin: 32px auto; padding: 24px; }
+        .header { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; align-items: flex-start; }
+        .header h1 { margin: 0; font-size: 2rem; }
+        .header p { margin: 8px 0 0; color: #475569; max-width: 680px; }
+        .navbar { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+        .nav-link { text-decoration: none; padding: 12px 16px; border-radius: 14px; font-weight: 700; color: #334155; background: #f8fafc; border: 1px solid rgba(148,163,184,.25); }
+        .nav-link.primary { color: #fff; background: #2563eb; border-color: transparent; }
+        .content { display: grid; grid-template-columns: 1.25fr .9fr; gap: 22px; margin-top: 26px; }
+        .panel { background: white; border-radius: 22px; border: 1px solid rgba(148,163,184,.18); padding: 26px; box-shadow: 0 24px 60px rgba(15,23,42,.06); }
+        .panel h2 { margin-top: 0; font-size: 1.25rem; }
+        .panel p, .panel li { color: #475569; line-height: 1.8; }
+        .panel ul { padding-left: 20px; margin: 16px 0 0; }
+        .button { display: inline-flex; align-items: center; justify-content: center; border: none; border-radius: 16px; padding: 12px 18px; font-weight: 700; cursor: pointer; text-decoration: none; }
+        .button.primary { background: #2563eb; color: white; }
+        .button.secondary { background: #f8fafc; color: #334155; border: 1px solid rgba(148,163,184,.25); }
+        .messages { margin: 20px 0; display: grid; gap: 12px; }
+        .messages .alert { padding: 14px 18px; border-radius: 16px; border: 1px solid rgba(148,163,184,.24); }
+        .alert-success { background: #eff6ff; color: #0f172a; border-color: rgba(59,130,246,.25); }
+        .alert-error, .alert-danger { background: #fef2f2; color: #991b1b; border-color: rgba(248,113,113,.3); }
+        .alert-warning { background: #fef3c7; color: #92400e; border-color: rgba(245,158,11,.3); }
+        .alert-info { background: #e0f2fe; color: #0369a1; border-color: rgba(56,189,248,.25); }
+        @media (max-width: 900px) { .content { grid-template-columns: 1fr; } }
+    </style>
+    <link rel="stylesheet" href="/static/theme.css">
+</head>
+<body>
+    <div class="page-container">
+        <div class="header">
+            <h1>Admin Panel</h1>
+            <p>Welcome, {{ username }}.</p>
+        </div>
+
+        {% if messages %}
+            <div class="messages" style="margin: 18px 0;">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}" style="padding: 14px 18px; border-radius: 16px; margin-bottom: 12px; background: #f8fafc; border: 1px solid rgba(148,163,184,.28);">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="navbar">
+            <a class="nav-link" href="/Dashboard">Dashboard</a>
+            <a class="nav-link" href="/ModelMonitoring">Monitoring</a>
+            <a class="nav-link" href="/ModelReport">Model report</a>
+            <a class="nav-link" href="/TrainML">Retrain model</a>
+            <a class="nav-link" href="/PredictPrices">Predict prices</a>
+            <a class="nav-link primary" href="/Logout">Logout</a>
+        </div>
+
+        <div class="content">
+            <div class="panel">
+                <h2>Current model metadata</h2>
+                <p><strong>Best model:</strong> {{ best_model|default:"N/A" }}</p>
+                <p><strong>Production model:</strong> {{ production_model_name|default:"N/A" }}</p>
+                <p><strong>Production model version:</strong> {{ production_model_version|default:"N/A" }}</p>
+                <p><strong>Dataset version:</strong> {{ dataset_version|default:"N/A" }}</p>
+                <p><strong>Last training date:</strong> {{ last_training_date|default:"N/A" }}</p>
+                <p><strong>Last training time:</strong> {{ training_time_seconds|default:"0" }} seconds</p>
+                <p><strong>Average prediction error:</strong> {% if avg_prediction_error is not None %}{{ avg_prediction_error }}%{% else %}N/A{% endif %}</p>
+                <p><strong>Model health:</strong> {{ model_health|default:"N/A" }}</p>
+                <p><strong>API status:</strong> {% if api_status.status %}{{ api_status.status }} - {{ api_status.message }}{% else %}N/A{% endif %}</p>
+                <p><strong>Rows used for training:</strong> {{ row_count|default:"0" }}</p>
+                <p><strong>Model artifact folder:</strong> {{ model_dir|default:"N/A" }}</p>
+                <p><strong>Saved model files:</strong> {{ artifact_count|default:"0" }}</p>
+                <p><strong>Total predictions:</strong> {{ total_predictions|default:"0" }}</p>
+                <p><strong>Report status:</strong> {{ report_available|yesno:"Available,Not available" }}</p>
+                {% if report_available %}
+                    <p><strong>Report path:</strong> {{ report_path }}</p>
+                    <p><strong>Report updated:</strong> {{ report_modified_at }}</p>
+                    <div style="display:flex; gap: 10px; flex-wrap:wrap; margin-top:10px;">
+                        <a href="/AdminDownload/model_comparison.json" class="button secondary">Download report JSON</a>
+                        <a href="/AdminDownload/model_comparison.md" class="button secondary">Download report Markdown</a>
+                        <a href="/AdminDownload/model_comparison.pdf" class="button secondary">Download report PDF</a>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="panel">
+                <h2>Available artifacts</h2>
+                {% if artifact_files %}
+                    <ul>
+                        {% for file in artifact_files %}
+                            <li>
+                                <strong>{{ file.type }}:</strong> {{ file.name }} — {{ file.size_kb }} KB — updated {{ file.modified_at }}
+                                <a href="/AdminDownload/{{ file.name }}" class="button secondary" style="padding:6px 10px; font-size:0.9rem; margin-left:10px;">Download</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>No artifacts found yet.</p>
+                {% endif %}
+                <div style="margin-top: 20px; display:flex; flex-wrap:wrap; gap: 12px;">
+                    <form method="post" action="/AdminRetrain" style="display:inline-block;">
+                        {% csrf_token %}
+                        <button type="submit" class="button primary">Retrain production model</button>
+                    </form>
+                    <form method="post" action="/AdminUploadDataset" enctype="multipart/form-data" style="display:inline-block;">
+                        {% csrf_token %}
+                        <input type="file" name="dataset" accept=".csv" style="display:inline-block;" />
+                        <button type="submit" class="button secondary">Upload dataset</button>
+                    </form>
+                    <form method="post" action="/AdminClearArtifacts" style="display:inline-block;">
+                        {% csrf_token %}
+                        <button type="submit" class="button secondary">Clear artifacts</button>
+                    </form>
+                    <form method="post" action="/AdminCleanRetraining" style="display:inline-block;">
+                        {% csrf_token %}
+                        <button type="submit" class="button secondary">Clean retraining history</button>
+                    </form>
+                    <form method="post" action="/AdminResetPredictionHistory" style="display:inline-block;">
+                        {% csrf_token %}
+                        <button type="submit" class="button secondary">Reset prediction history</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        {% if report_available and report_excerpt %}
+            <div class="panel" style="margin-top: 22px;">
+                <h2>Report excerpt</h2>
+                <p>{{ report_excerpt }}</p>
+                {% if top_models %}
+                    <h3>Top evaluated models</h3>
+                    <ul>
+                        {% for model in top_models %}
+                            <li>{{ model.name }} — RMSE {{ model.rmse|floatformat:2 }}, MAE {{ model.mae|floatformat:2 }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>

@@ -1,0 +1,288 @@
+:root {
+    --bg: #eef5ff;
+    --bg-soft: #f7fbff;
+    --surface: rgba(255, 255, 255, 0.95);
+    --surface-strong: #ffffff;
+    --text: #102a43;
+    --muted: #52606d;
+    --accent: #2563eb;
+    --accent-soft: #dbeafe;
+    --accent-strong: #1d4ed8;
+    --border: rgba(148, 163, 184, 0.24);
+    --shadow: 0 30px 90px rgba(15, 23, 42, 0.12);
+    --radius: 22px;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    color: var(--text);
+    background: radial-gradient(circle at top left, rgba(37, 99, 235, 0.18), transparent 18%),
+                radial-gradient(circle at bottom right, rgba(168, 85, 247, 0.12), transparent 15%),
+                linear-gradient(180deg, #eef5ff 0%, #f8fbff 100%) !important;
+}
+
+body, input, select, textarea, button {
+    font-family: inherit;
+}
+
+button, .button, .nav-link, .tile a {
+    transition: all 0.2s ease;
+}
+
+button, .button {
+    border: none;
+    border-radius: 16px;
+    cursor: pointer;
+    font-weight: 700;
+}
+
+button:hover, .button:hover, .nav-link:hover, .tile a:hover {
+    transform: translateY(-1px);
+}
+
+input, select, textarea {
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 14px 16px;
+    background: rgba(255,255,255,0.96);
+    color: var(--text);
+    outline: none;
+}
+
+input:focus, select:focus, textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+}
+
+.card, .page, .panel, .hero, .summary-card, .detail-card, .table-panel, .content, .tile {
+    background: var(--surface) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: var(--radius) !important;
+    box-shadow: var(--shadow) !important;
+}
+
+.card, .page, .panel, .hero, .summary-card, .detail-card, .table-panel {
+    padding: 24px !important;
+}
+
+h1, h2, h3, h4, h5 {
+    color: #0f172a;
+    margin: 0;
+}
+
+p, li, span, label {
+    color: var(--muted);
+}
+
+a {
+    color: var(--accent);
+    text-decoration: none;
+}
+
+a:hover {
+    color: var(--accent-strong);
+}
+
+.nav-link, .button, .tile a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.button.primary, .nav-link.primary, .tile a.primary, .pagination a.primary, .toolbar a.primary {
+    background: var(--accent) !important;
+    color: #fff !important;
+}
+
+.button.secondary, .nav-link.secondary, .tile a.secondary, .pagination a.secondary, .toolbar a.secondary {
+    background: #f8fafc !important;
+    color: #334155 !important;
+    border: 1px solid rgba(148,163,184,.25) !important;
+}
+
+.button, .nav-link, .tile a, .footer-links a, .helper-links a, .actions a, .pagination a, .toolbar a {
+    color: inherit !important;
+}
+
+.messages, .note, .alert {
+    border-radius: 18px;
+    padding: 16px 18px;
+    margin-bottom: 18px;
+}
+
+.alert-success {
+    background: #eff6ff;
+    color: #1e40af;
+    border: 1px solid rgba(59,130,246,.25);
+}
+
+.alert-error, .alert-danger {
+    background: #fef2f2;
+    color: #991b1b;
+    border: 1px solid rgba(248,113,113,.25);
+}
+
+.alert-warning {
+    background: #fefce8;
+    color: #92400e;
+    border: 1px solid rgba(245,158,11,.25);
+}
+
+.alert-info {
+    background: #e0f2fe;
+    color: #0c4a6e;
+    border: 1px solid rgba(56,189,248,.25);
+}
+
+.password-field {
+    position: relative;
+}
+
+.password-field input {
+    padding-right: 48px;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: none;
+    background: transparent;
+    color: var(--accent);
+    cursor: pointer;
+    font-size: 1.05rem;
+}
+
+.footer-links, .helper-links, .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.footer-links a, .helper-links a, .actions a {
+    color: var(--accent);
+}
+
+.toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 18px;
+}
+
+.toolbar input {
+    flex: 1 1 320px;
+    min-width: 180px;
+}
+
+.toolbar button,
+.toolbar a {
+    white-space: nowrap;
+}
+
+.table-wrap {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    max-width: 100%;
+}
+
+.table-wrap table {
+    width: auto;
+    min-width: 100%;
+}
+
+.table-wrap th,
+.table-wrap td {
+    min-width: 120px;
+}
+
+.chart {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 18px;
+    border: 1px solid var(--border);
+    padding: 0;
+    background: #fff;
+}
+
+.chart img {
+    width: auto;
+    min-width: 100%;
+    max-width: none;
+    height: auto;
+    display: block;
+    object-fit: contain;
+}
+
+.toolbar button,
+.toolbar a {
+    min-width: 120px;
+}
+
+.toolbar button.primary,
+.toolbar a.primary {
+    background: var(--accent) !important;
+    color: #fff !important;
+}
+
+.toolbar button.secondary,
+.toolbar a.secondary {
+    background: #f8fafc !important;
+    color: #334155 !important;
+    border: 1px solid rgba(148,163,184,.25) !important;
+}
+
+.pagination {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 16px;
+}
+
+.pagination a {
+    padding: 10px 14px;
+    border-radius: 12px;
+    text-decoration: none;
+    color: var(--accent);
+    background: #f8fafc;
+    border: 1px solid var(--border);
+}
+
+.pagination a.primary {
+    background: var(--accent);
+    color: #fff;
+    border-color: transparent;
+}
+
+@media (max-width: 900px) {
+    .content, .page, .panel, .hero, .summary-card, .detail-card, .table-panel, .grid, .stats, .details-grid, .row, .row-small, .header {
+        grid-template-columns: 1fr !important;
+        flex-direction: column !important;
+    }
+    .toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .toolbar button,
+    .toolbar a {
+        width: 100%;
+        text-align: center;
+    }
+}

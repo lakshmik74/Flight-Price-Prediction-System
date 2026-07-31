@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+    <style>
+        :root { --bg:#f4f7fb; --card:#ffffff; --accent:#2563eb; --text:#0f172a; --muted:#64748b; }
+        * { box-sizing: border-box; }
+        body { margin:0; font-family: Arial, sans-serif; color:var(--text); min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px; background:linear-gradient(rgba(15,23,42,.45), rgba(15,23,42,.45)), url('https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1600&q=80') center/cover no-repeat; }
+        .card { width:min(480px,100%); background:rgba(255,255,255,.93); border-radius:20px; box-shadow:0 15px 45px rgba(15,23,42,.12); padding:30px; backdrop-filter:blur(4px); }
+        h2 { margin-top:0; margin-bottom:6px; }
+        .subtitle { color:var(--muted); margin-bottom:16px; }
+        form { display:flex; flex-direction:column; gap:12px; }
+        input, textarea { padding:12px 14px; border:1px solid #dbeafe; border-radius:10px; font-size:1rem; width:100%; }
+        textarea { min-height:90px; resize:vertical; }
+        button { background:var(--accent); color:white; border:none; border-radius:10px; padding:12px 14px; font-size:1rem; cursor:pointer; }
+        button:hover { background:#1d4ed8; }
+        a { color:var(--accent); text-decoration:none; font-weight:600; }
+        a:hover { text-decoration:underline; }
+        .msg { background:#eff6ff; color:#1d4ed8; padding:10px 12px; border-radius:10px; margin-bottom:12px; }
+        .password-field { position: relative; display: flex; align-items: center; }
+        .password-field input { flex: 1; padding-right: 46px; }
+        .password-toggle { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); border: none; background: transparent; cursor: pointer; font-size: 1rem; color: var(--accent); }
+        .password-toggle:focus { outline: none; }
+    </style>
+    <link rel="stylesheet" href="/static/theme.css">
+</head>
+<body>
+    <div class="card">
+        <h2>Create your account</h2>
+        <p class="subtitle">Join the app and start getting flight price insights.</p>
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="msg msg-{{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        <form method="post" action="/SignupAction">
+            {% csrf_token %}
+            <input type="text" name="t1" placeholder="Username" required>
+            <div class="password-field">
+                <input id="signup-password" type="password" name="t2" placeholder="Password" required pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}" title="Use 8+ characters with uppercase, lowercase, digit, and symbol">
+                <button type="button" class="password-toggle" onclick="togglePassword('signup-password')" aria-label="Toggle password visibility">👁️</button>
+            </div>
+            <div class="password-hint">Use at least 8 characters, including uppercase, lowercase, number, and symbol.</div>
+            <input type="text" name="t3" placeholder="Contact Number" required>
+            <input type="email" name="t4" placeholder="Email" required>
+            <textarea name="t5" placeholder="Address" required></textarea>
+            <button type="submit">Sign Up</button>
+        </form>
+        <p style="margin-top:14px;"><a href="/UserLogin">Back to login</a></p>
+    </div>
+    <script>
+        function togglePassword(fieldId) {
+            const field = document.getElementById(fieldId);
+            if (!field) return;
+            field.type = field.type === 'password' ? 'text' : 'password';
+        }
+    </script>
+</body>
+</html>

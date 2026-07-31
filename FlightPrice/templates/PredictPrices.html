@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Predict Prices</title>
+    <style>
+        :root {
+            --bg: #eef3fb;
+            --card: #ffffff;
+            --accent: #2563eb;
+            --accent-soft: #dbeafe;
+            --text: #0f172a;
+            --muted: #475569;
+            --border: #cbd5e1;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin:0;
+            min-height:100vh;
+            font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            color: var(--text);
+            background: radial-gradient(circle at top right, rgba(59,130,246,.15), transparent 24%),
+                        linear-gradient(180deg, #eef3fb 0%, #f8fafc 100%);
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            padding:24px;
+        }
+        .card {
+            width: min(700px, 100%);
+            background: var(--card);
+            border-radius: 28px;
+            box-shadow: 0 24px 70px rgba(15,23,42,.12);
+            padding: 34px;
+            border: 1px solid rgba(148,163,184,.16);
+        }
+        .header {
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap: 18px;
+            flex-wrap:wrap;
+            margin-bottom: 24px;
+        }
+        .header h2 {
+            margin:0;
+            font-size: clamp(1.8rem, 2.4vw, 2.6rem);
+            line-height: 1.05;
+        }
+        .header p {
+            margin:10px 0 0;
+            color: var(--muted);
+            max-width: 520px;
+            line-height: 1.8;
+        }
+        form {
+            display:grid;
+            gap:18px;
+        }
+        .field {
+            display:flex;
+            flex-direction:column;
+            gap:8px;
+        }
+        label {
+            font-weight:700;
+            color:#0f172a;
+        }
+        input, select, datalist {
+            width:100%;
+            padding:14px 16px;
+            border-radius:14px;
+            border:1px solid var(--border);
+            font-size:1rem;
+            color: var(--text);
+            background: #fff;
+        }
+        .helper {
+            color: var(--muted);
+            font-size: .95rem;
+            line-height: 1.6;
+        }
+        .row {
+            display:grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 14px;
+        }
+        .row select { min-width: 0; }
+        button {
+            width: fit-content;
+            background: var(--accent);
+            color: white;
+            border:none;
+            border-radius: 14px;
+            padding: 14px 24px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform .18s ease, background .18s ease;
+        }
+        button:hover {
+            background: #1d4ed8;
+            transform: translateY(-1px);
+        }
+        .row-small {
+            display:grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+        }
+        .note {
+            padding: 16px 18px;
+            border-radius: 18px;
+            background: #eff6ff;
+            border: 1px solid #dbeafe;
+            color: #334155;
+        }
+        .button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 14px;
+            padding: 12px 18px;
+            font-weight: 700;
+            text-decoration: none;
+            border: 1px solid transparent;
+            transition: transform .18s ease, background .18s ease, border-color .18s ease, color .18s ease;
+        }
+        .button.secondary {
+            background: #f8fafc;
+            color: #2563eb;
+            border-color: rgba(37,99,235,.16);
+        }
+        .button.secondary:hover {
+            background: #eff6ff;
+        }
+        .button.primary {
+            background: #2563eb;
+            color: white;
+        }
+        .button.primary:hover {
+            background: #1d4ed8;
+        }
+        .footer-links {
+            margin-top:18px;
+            display:flex;
+            flex-wrap:wrap;
+            gap:12px;
+            color: var(--muted);
+            font-size: .95rem;
+        }
+        .footer-links a { color: var(--accent); text-decoration:none; }
+        .footer-links a:hover { text-decoration:none; }
+        @media (max-width: 700px) {
+            .row, .row-small { grid-template-columns: 1fr; }
+            .header { text-align:center; }
+            .header p { margin: 10px auto 0; }
+        }
+    </style>
+    <link rel="stylesheet" href="/static/theme.css">
+</head>
+<body>
+    <div class="card">
+        <div class="header">
+            <div>
+                <h2>Predict Flight Price</h2>
+                <p>Use a clean route form to estimate costs and compare predicted fares with the market average.</p>
+            </div>
+        </div>
+        <form method="post" action="/PredictPricesAction">
+            {% csrf_token %}
+            {% if messages %}
+            <div class="note" style="background:#fee2e2; border-color:#fecaca; color:#7f1d1d;">
+                {% for message in messages %}
+                    {{ message }}
+                {% endfor %}
+            </div>
+            {% endif %}
+            <div class="row">
+                <div class="field">
+                    <label for="t4">Airline</label>
+                    <select id="t4" name="t4" required>
+                        <option value="">Select airline</option>
+                        {% for airline in airline_options %}
+                            <option value="{{ airline }}" {% if selected_airline == airline %}selected{% endif %}>{{ airline }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="field">
+                    <label for="t5">Source city</label>
+                    <select id="t5" name="t5" required>
+                        <option value="">Select source city</option>
+                        {% for city in city_options %}
+                            <option value="{{ city }}" {% if selected_source == city %}selected{% endif %}>{{ city }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="field">
+                    <label for="t6">Destination city</label>
+                    <select id="t6" name="t6" required>
+                        <option value="">Select destination city</option>
+                        {% for city in city_options %}
+                            <option value="{{ city }}" {% if selected_dest == city %}selected{% endif %}>{{ city }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="row-small">
+                <div class="field">
+                    <label>Travel day</label>
+                    <select name="t1" required>
+                        {% for d in day_range %}
+                            <option value="{{ d }}"{% if d == selected_day %} selected{% endif %}>{{ d }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="field">
+                    <label>Travel month</label>
+                    <select name="t2" required>
+                        {% for m in month_range %}
+                            <option value="{{ m }}"{% if m == selected_month %} selected{% endif %}>{{ m }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="field">
+                    <label>Travel year</label>
+                    <select name="t3" required>
+                        {% for y in year_range %}
+                            <option value="{{ y }}"{% if y == selected_year %} selected{% endif %}>{{ y }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="field">
+                    <label for="stops">Stops</label>
+                    <select id="stops" name="stops" required>
+                        <option value="">Select stops</option>
+                        {% for stop in stops_options %}
+                            <option value="{{ stop }}" {% if selected_stops == stop %}selected{% endif %}>{{ stop }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="field">
+                    <label for="travel_class">Travel class</label>
+                    <select id="travel_class" name="travel_class" required>
+                        <option value="">Select class</option>
+                        {% for travel_class in travel_class_options %}
+                            <option value="{{ travel_class }}" {% if selected_travel_class == travel_class %}selected{% endif %}>{{ travel_class }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="field">
+                    <label>&nbsp;</label>
+                    <div class="note" style="margin:0; min-height: 48px; display:flex; align-items:center;">Route profile helps align pricing with the selected stop pattern and cabin type.</div>
+                </div>
+            </div>
+            <div class="note">
+                Tip: For best results, enter common city names such as Delhi, Mumbai, Banglore, Chennai, Hyderabad or Kolkata. If the route is not present in the current sample dataset, the app will still estimate using the closest market benchmark.
+            </div>
+            <button type="submit">Get price estimate</button>
+        </form>
+        <div class="footer-links" style="display:flex; flex-wrap:wrap; gap:12px; margin-top:22px;">
+            <a class="button secondary" href="/index.html">Back to home</a>
+            <a class="button secondary" href="/DatasetCollection">See sample data</a>
+            <a class="button secondary" href="/ModelReport">View model report</a>
+            <a class="button primary" href="/TrainML">Train/refresh model</a>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Model Report</title>
+    <style>
+        body { margin:0; font-family: Inter, system-ui, sans-serif; background:#f7fbff; color:#0f172a; }
+        .page { max-width: 960px; margin: 32px auto; padding: 24px; }
+        .card { background:#fff; border-radius:24px; box-shadow:0 20px 60px rgba(15,23,42,.08); padding:32px; border:1px solid rgba(148,163,184,.16); }
+        h1 { margin-top:0; font-size:2rem; }
+        .summary-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:18px; margin-top:24px; }
+        .stat { background:#f8fbff; border-radius:18px; padding:22px; }
+        .stat h3 { margin:0 0 8px; font-size:1rem; color:#334155; }
+        .stat p { margin:0; font-size:1.4rem; font-weight:700; }
+        table { width:100%; border-collapse:collapse; margin-top:24px; }
+        th, td { padding:14px 16px; border-bottom:1px solid rgba(148,163,184,.2); text-align:left; }
+        th { background:#eef5ff; color:#0f172a; }
+        .note { margin-top:24px; padding:18px 20px; border-radius:18px; background:#eff6ff; color:#334155; }
+        .actions { margin-top:26px; display:flex; gap:12px; flex-wrap:wrap; }
+        a { display:inline-block; padding:12px 18px; border-radius:14px; text-decoration:none; font-weight:700; }
+        a.primary { background:#2563eb; color:#fff; }
+        a.secondary { background:#f8fafc; color:#334155; border:1px solid rgba(148,163,184,.25); }
+        @media(max-width:760px) { .summary-grid { grid-template-columns:1fr; } }
+    </style>
+    <link rel="stylesheet" href="/static/theme.css">
+</head>
+<body>
+    <div class="page">
+        <div class="card">
+            <h1>Model Comparison Report</h1>
+            <p>Review the trained regression models and choose the one with the lowest RMSE for production.</p>
+            <div class="summary-grid">
+                <div class="stat"><h3>Total rows</h3><p>{{ total_rows }}</p></div>
+                <div class="stat"><h3>Features</h3><p>{{ feature_count }}</p></div>
+                <div class="stat"><h3>Best model</h3><p>{{ best_model_name }}</p></div>
+            </div>
+            <table>
+                <thead>
+                    <tr><th>Model</th><th>RMSE</th><th>MAE</th><th>R2</th></tr>
+                </thead>
+                <tbody>
+                    {% for model in models %}
+                    <tr>
+                        <td>{{ model.name }}</td>
+                        <td>{{ model.rmse|floatformat:2 }}</td>
+                        <td>{{ model.mae|floatformat:2 }}</td>
+                        <td>{% if model.r2 %}{{ model.r2|floatformat:4 }}{% else %}-{% endif %}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <div class="note">
+                <strong>Notes:</strong> {{ note }}
+            </div>
+            <div class="actions">
+                <a class="primary" href="/TrainML">Retrain model</a>
+                <a class="secondary" href="/PredictPrices">Predict prices</a>
+                <a class="secondary" href="/DatasetCollection">View dataset</a>
+                <a class="secondary" href="/AdminDownload/model_comparison.md">Download Markdown</a>
+                <a class="secondary" href="/AdminDownload/model_comparison.pdf">Download PDF</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

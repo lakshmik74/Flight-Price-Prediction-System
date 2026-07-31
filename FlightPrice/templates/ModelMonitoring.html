@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Model Monitoring</title>
+    <link rel="stylesheet" href="/static/templatemo_style.css">
+    <style>
+        body { margin: 0; font-family: Inter, system-ui, sans-serif; background: #f7f9fc; color: #111827; }
+        .page { max-width: 1120px; margin: 32px auto; padding: 24px; }
+        .header { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; align-items: flex-start; }
+        .header h1 { margin: 0; font-size: 2rem; }
+        .header p { margin: 8px 0 0; color: #475569; max-width: 680px; }
+        .navbar { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+        .nav-link { text-decoration: none; padding: 12px 16px; border-radius: 14px; font-weight: 700; color: #334155; background: #f8fafc; border: 1px solid rgba(148,163,184,.25); }
+        .nav-link.primary { color: #fff; background: #2563eb; border-color: transparent; }
+        .section-grid { display: grid; grid-template-columns: 1.2fr .8fr; gap: 22px; margin-top: 26px; }
+        .panel { background: white; border-radius: 22px; border: 1px solid rgba(148,163,184,.18); padding: 26px; box-shadow: 0 24px 60px rgba(15,23,42,.06); }
+        .panel h2 { margin-top: 0; font-size: 1.35rem; letter-spacing: -.02em; }
+        .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; margin-top: 18px; }
+        .summary-card { background: #ffffff; border-radius: 20px; padding: 22px; border: 1px solid rgba(148,163,184,.18); box-shadow: 0 12px 28px rgba(15,23,42,.06); min-height: 112px; display: flex; flex-direction: column; justify-content: space-between; }
+        .summary-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; }
+        .summary-card strong { margin: 0; color: #475569; font-size: .95rem; letter-spacing: .01em; flex: 1 1 0; min-width: 0; }
+        .summary-card .value { font-size: 1.9rem; font-weight: 800; color: #0f172a; line-height: 1.05; text-align: right; white-space: normal; overflow-wrap: anywhere; word-break: break-word; flex: 0 1 160px; }
+        .summary-card .subtext { margin-top: 12px; font-size: .92rem; color: #475569; line-height: 1.55; }
+        .summary-card .status-chip { display: inline-flex; align-items: center; justify-content: center; padding: 8px 14px; border-radius: 999px; background: #eef2ff; color: #1d4ed8; font-size: .85rem; font-weight: 700; }
+        .status-chip.success { background: #dcfce7; color: #166534; }
+        .status-chip.warning { background: #fef3c7; color: #92400e; }
+        .status-chip.danger { background: #fee2e2; color: #991b1b; }
+        .summary-card .status-message { margin-top: 10px; color: #475569; font-size: .95rem; line-height: 1.45; }
+        .details-grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 18px; margin-top: 24px; }
+        .detail-card { background: #f8fafc; border-radius: 20px; border: 1px solid rgba(148,163,184,.18); padding: 22px; }
+        .detail-card p { margin: 0 0 12px; }
+        .detail-card p:last-child { margin-bottom: 0; }
+        .detail-card strong { color: #0f172a; }
+        .detail-card .small-text { color: #475569; font-size: .95rem; }
+        .prediction-snapshot { display: grid; gap: 12px; margin-top: 12px; }
+        .prediction-snapshot .metric { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: baseline; }
+        .prediction-snapshot .metric strong { color: #0f172a; }
+        .prediction-snapshot .metric span { color: #475569; }
+        table { width: 100%; border-collapse: collapse; margin-top: 18px; }
+        th, td { padding: 14px 16px; border-bottom: 1px solid rgba(148,163,184,.18); text-align: left; }
+        th { background: #f1f5f9; color: #0f172a; }
+        .badge { display: inline-flex; align-items: center; padding: 6px 12px; border-radius: 999px; background: #eef2ff; color: #3730a3; font-size: .85rem; font-weight: 700; }
+        .status-list { list-style: none; margin: 0; padding: 0; }
+        .status-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(148,163,184,.12); }
+        .small-text { color: #64748b; font-size: .95rem; }
+        @media (max-width: 900px) { .section-grid, .stats, .details-grid { grid-template-columns: 1fr; } }
+    </style>
+    <link rel="stylesheet" href="/static/theme.css">
+</head>
+<body>
+    <div class="page">
+        <div class="header">
+            <div>
+                <h1>Model Monitoring</h1>
+                <p>Track production model versions, prediction quality, retraining history, and available artifacts from one place.</p>
+            </div>
+            <div class="navbar">
+                <a class="nav-link" href="/Dashboard">Dashboard</a>
+                <a class="nav-link" href="/AdminPanel">Admin panel</a>
+                <a class="nav-link" href="/ModelReport">Model report</a>
+                <a class="nav-link secondary" href="/TrainML">Retrain model</a>
+                <a class="nav-link primary" href="/Logout">Logout</a>
+            </div>
+        </div>
+
+        <div class="section-grid">
+            <div class="panel">
+                <h2>Production monitoring summary</h2>
+                <div class="stats">
+                    <div class="summary-card">
+                        <div class="summary-row">
+                            <strong>Production model version</strong>
+                            <span class="value">{{ production_model_version }}</span>
+                        </div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-row">
+                            <strong>Current production model</strong>
+                            <span class="value">{{ production_model_name }}</span>
+                        </div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-row">
+                            <strong>Production artifact status</strong>
+                            <span class="value">{% if production_model_exists %}Available{% else %}Missing{% endif %}</span>
+                        </div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-row">
+                            <strong>Average prediction error</strong>
+                            <span class="value">{% if avg_prediction_error is not None %}{{ avg_prediction_error }}%{% else %}N/A{% endif %}</span>
+                        </div>
+                        {% if avg_prediction_error is not None %}
+                        <p class="subtext">Lower is better; under 5% is excellent.</p>
+                        {% endif %}
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-row">
+                            <strong>API status</strong>
+                            <span class="value">{{ api_status.status }}</span>
+                        </div>
+                        <p class="status-message">{{ api_status.message }}</p>
+                    </div>
+                </div>
+
+                <div class="details-grid">
+                    <div class="detail-card">
+                        <p><strong>Last training:</strong> {{ last_training_date }}</p>
+                        <p class="small-text">Dataset: {{ dataset_version }}</p>
+                        <p class="small-text">Model health: <span class="status-chip {% if model_health == 'Excellent' %}success{% elif model_health == 'Needs review' %}warning{% elif model_health == 'Critical' %}danger{% else %}warning{% endif %}">{{ model_health }}</span></p>
+                        <p class="small-text">Artifacts stored: {{ artifact_count }}</p>
+                    </div>
+                    <div class="detail-card">
+                        <p><strong>Total predictions tracked:</strong> {{ total_predictions }}</p>
+                        {% if last_prediction %}
+                            <div class="prediction-snapshot">
+                                <div class="metric"><strong>Latest status</strong><span>{{ last_prediction.status }}</span></div>
+                                <div class="metric"><strong>Route</strong><span>{{ last_prediction.airline }} {{ last_prediction.source }}→{{ last_prediction.destination }}</span></div>
+                                <div class="metric"><strong>Predicted</strong><span>₹{{ last_prediction.predicted_price }}</span></div>
+                                <div class="metric"><strong>Live</strong><span>₹{{ last_prediction.live_price }}</span></div>
+                                <div class="metric"><strong>Error</strong><span>{{ last_prediction.percentage_error }}%</span></div>
+                            </div>
+                        {% else %}
+                            <p class="small-text">No prediction history has been recorded yet.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <h2>Artifact & report inventory</h2>
+                {% if artifact_files %}
+                    <table>
+                        <thead>
+                            <tr><th>Name</th><th>Type</th><th>Size</th><th>Updated</th><th></th></tr>
+                        </thead>
+                        <tbody>
+                            {% for file in artifact_files %}
+                            <tr>
+                                <td>{{ file.name }}</td>
+                                <td>{{ file.type }}</td>
+                                <td>{{ file.size_kb }} KB</td>
+                                <td>{{ file.modified_at }}</td>
+                                <td style="display:flex; gap:8px;">
+                                    <a class="nav-link secondary" href="/AdminDownload/{{ file.name }}">Download</a>
+                                    {% if file.type == 'Model' %}
+                                    <form method="post" action="/AdminPromote/{{ file.name }}" style="display:inline-block; margin:0;">
+                                        {% csrf_token %}
+                                        <button class="nav-link" style="background:#f1f5f9; border-radius:12px; padding:8px 10px;">Promote</button>
+                                    </form>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p>No artifacts or reports available yet.</p>
+                {% endif %}
+                {% if report_available %}
+                    <div style="margin-top:18px;">
+                        <strong>Latest report:</strong> <span>{{ report_path }}</span>
+                        <p class="small-text">Updated {{ report_modified_at }}</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="section-grid" style="margin-top: 24px;">
+            <div class="panel">
+                <h2>Prediction status breakdown</h2>
+                {% if status_breakdown %}
+                    <ul class="status-list">
+                        {% for status in status_breakdown %}
+                            <li class="status-item"><span>{{ status.status }}</span><strong>{{ status.count }}</strong></li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>No prediction history available to summarize.</p>
+                {% endif %}
+            </div>
+            <div class="panel">
+                <h2>Retraining history</h2>
+                {% if retraining_history %}
+                    <table>
+                        <thead>
+                            <tr><th>Date</th><th>Model</th><th>Version</th><th>RMSE</th><th>MAE</th><th></th></tr>
+                        </thead>
+                        <tbody>
+                            {% for run in retraining_history %}
+                            <tr>
+                                <td>{{ run.training_date|date:'Y-m-d H:i' }}</td>
+                                <td>{{ run.model_name }}</td>
+                                <td>{{ run.model_version }}</td>
+                                <td>
+                                    {% if run.artifact_exists %}
+                                        <span class="badge" style="background:#dcfce7;color:#166534;">Available</span>
+                                    {% else %}
+                                        <span class="badge" style="background:#fee2e2;color:#991b1b;">Missing</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ run.rmse|floatformat:2 }}</td>
+                                <td>{{ run.mae|floatformat:2 }}</td>
+                                <td>
+                                    {% if run.artifact_exists %}
+                                    <form method="post" action="/AdminRollback/{{ run.model_version }}" style="display:inline-block; margin:0;">
+                                        {% csrf_token %}
+                                        <button class="nav-link" style="background:#fff1f2; border-radius:12px; padding:6px 10px;">Rollback</button>
+                                    </form>
+                                    {% else %}
+                                        <span class="small-text">Artifact missing</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p>No retraining history available.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        {% if report_available and report_excerpt %}
+        <div class="panel" style="margin-top: 22px;">
+            <h2>Report excerpt</h2>
+            <p>{{ report_excerpt }}</p>
+            {% if top_models %}
+                <h3>Top evaluated models</h3>
+                <ul>
+                    {% for model in top_models %}
+                        <li>{{ model.name }} — RMSE {{ model.rmse|floatformat:2 }}, MAE {{ model.mae|floatformat:2 }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>

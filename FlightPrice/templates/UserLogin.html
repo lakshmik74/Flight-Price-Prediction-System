@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Login</title>
+    <link rel="stylesheet" href="/static/theme.css">
+</head>
+<body>
+    <div class="card">
+        <h2>Welcome back</h2>
+        <p class="subtitle">Login to continue exploring flight prices.</p>
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="msg msg-{{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        <form method="post" action="/UserLoginAction">
+            {% csrf_token %}
+            <input type="text" name="username" placeholder="Username" required>
+            <div class="password-field">
+                <input id="login-password" type="password" name="password" placeholder="Password" required>
+                <button type="button" class="password-toggle" onclick="togglePassword('login-password')" aria-label="Toggle password visibility">👁️</button>
+            </div>
+            <button type="submit">Login</button>
+        </form>
+        <p class="helper-links"><a href="/ForgotPassword">Forgot password?</a> · <a href="/Signup">Create account</a></p>
+    </div>
+    <script>
+        function togglePassword(fieldId) {
+            const field = document.getElementById(fieldId);
+            if (!field) return;
+            field.type = field.type === 'password' ? 'text' : 'password';
+        }
+    </script>
+</body>
+</html>
