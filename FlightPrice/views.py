@@ -1547,6 +1547,11 @@ def PredictPricesAction(request):
             years = [str(y) for y in range(start_year, start_year + 28)]
             months = [f"{i:02d}" for i in range(1, 13)]
             days = [f"{i:02d}" for i in range(1, 32)]
+            airline_options = [
+                'IndiGo', 'Air India', 'SpiceJet', 'Vistara', 'GoAir', 'Air Asia', 'Jet Airways',
+                'Jet Airways Business', 'Multiple carriers', 'Premium', 'Trujet', 'Vistara Premium'
+            ]
+            city_options = ['Delhi', 'Mumbai', 'Banglore', 'Chennai', 'Kolkata', 'Hyderabad', 'Pune', 'Cochin', 'New Delhi']
 
             context = {
                 'day_range': days,
@@ -1560,6 +1565,8 @@ def PredictPricesAction(request):
                 'selected_dest': dest or '',
                 'selected_stops': stops or '',
                 'selected_travel_class': travel_class or '',
+                'airline_options': airline_options,
+                'city_options': city_options,
                 'stops_options': ['Non-stop', '1 stop', '2 stops', '3+ stops'],
                 'travel_class_options': ['Business class', 'Normal class'],
             }
