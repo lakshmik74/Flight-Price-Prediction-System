@@ -34,9 +34,19 @@ catboost_info/
 *.pkl
 
 # -----------------------------
+# Local / utility files
+# -----------------------------
+.env
+DB.txt
+run.bat
+run_mysql.py
+__keep__.txt
+
+# -----------------------------
 # Jupyter
 # -----------------------------
 .ipynb_checkpoints/
+*.ipynb
 
 # -----------------------------
 # IDE
