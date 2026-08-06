@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -23,7 +24,7 @@
         a.secondary { background:#f8fafc; color:#334155; border:1px solid rgba(148,163,184,.25); }
         @media(max-width:760px) { .summary-grid { grid-template-columns:1fr; } }
     </style>
-    <link rel="stylesheet" href="/static/theme.css">
+    <link rel="stylesheet" href="{% static 'theme.css' %}">
 </head>
 <body>
     <div class="page">

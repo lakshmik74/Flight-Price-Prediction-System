@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -24,7 +25,7 @@
         .password-toggle { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); border: none; background: transparent; cursor: pointer; font-size: 1rem; color: var(--accent); }
         .password-toggle:focus { outline: none; }
     </style>
-    <link rel="stylesheet" href="/static/theme.css">
+    <link rel="stylesheet" href="{% static 'theme.css' %}">
 </head>
 <body>
     <div class="card">

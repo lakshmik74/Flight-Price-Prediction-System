@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -6,265 +7,357 @@
     <title>Predict Prices</title>
     <style>
         :root {
-            --bg: #eef3fb;
+            --bg: #f0f4f9;
             --card: #ffffff;
             --accent: #2563eb;
-            --accent-soft: #dbeafe;
+            --accent-light: #dbeafe;
             --text: #0f172a;
-            --muted: #475569;
-            --border: #cbd5e1;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --warning: #f59e0b;
         }
         * { box-sizing: border-box; }
         body {
-            margin:0;
-            min-height:100vh;
-            font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            margin: 0;
+            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
             color: var(--text);
-            background: radial-gradient(circle at top right, rgba(59,130,246,.15), transparent 24%),
-                        linear-gradient(180deg, #eef3fb 0%, #f8fafc 100%);
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            padding:24px;
+            background: linear-gradient(135deg, #f0f4f9 0%, #e8eef7 50%, #f0f4f9 100%);
+            padding: 24px 16px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
         }
         .card {
-            width: min(700px, 100%);
             background: var(--card);
-            border-radius: 28px;
-            box-shadow: 0 24px 70px rgba(15,23,42,.12);
-            padding: 34px;
-            border: 1px solid rgba(148,163,184,.16);
+            border-radius: 24px;
+            box-shadow: 0 10px 40px rgba(15, 23, 42, 0.1);
+            padding: 48px;
+            border: 1px solid var(--border);
         }
         .header {
-            display:flex;
-            justify-content:space-between;
-            align-items:center;
-            gap: 18px;
-            flex-wrap:wrap;
-            margin-bottom: 24px;
+            margin-bottom: 36px;
+            text-align: center;
         }
-        .header h2 {
-            margin:0;
-            font-size: clamp(1.8rem, 2.4vw, 2.6rem);
-            line-height: 1.05;
+        .header h1 {
+            margin: 0 0 12px;
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
         .header p {
-            margin:10px 0 0;
-            color: var(--muted);
-            max-width: 520px;
-            line-height: 1.8;
+            margin: 0;
+            color: var(--text-muted);
+            font-size: 1.05rem;
+            line-height: 1.6;
+            max-width: 600px;
+            margin: 0 auto;
         }
         form {
-            display:grid;
-            gap:18px;
+            display: grid;
+            gap: 32px;
         }
-        .field {
-            display:flex;
-            flex-direction:column;
-            gap:8px;
+        .section {
+            display: grid;
+            gap: 20px;
         }
-        label {
-            font-weight:700;
-            color:#0f172a;
-        }
-        input, select, datalist {
-            width:100%;
-            padding:14px 16px;
-            border-radius:14px;
-            border:1px solid var(--border);
-            font-size:1rem;
-            color: var(--text);
-            background: #fff;
-        }
-        .helper {
-            color: var(--muted);
-            font-size: .95rem;
-            line-height: 1.6;
-        }
-        .row {
-            display:grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 14px;
-        }
-        .row select { min-width: 0; }
-        button {
-            width: fit-content;
-            background: var(--accent);
-            color: white;
-            border:none;
-            border-radius: 14px;
-            padding: 14px 24px;
+        .section-title {
             font-size: 1rem;
             font-weight: 700;
-            cursor: pointer;
-            transition: transform .18s ease, background .18s ease;
+            color: var(--text);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--accent);
+            display: inline-block;
         }
-        button:hover {
-            background: #1d4ed8;
-            transform: translateY(-1px);
+        .form-group {
+            display: grid;
+            gap: 12px;
         }
-        .row-small {
-            display:grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 14px;
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 18px;
         }
-        .note {
-            padding: 16px 18px;
-            border-radius: 18px;
+        .form-row-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+        }
+        label {
+            font-weight: 600;
+            color: var(--text);
+            font-size: 0.95rem;
+        }
+        input, select {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 10px;
+            border: 1.5px solid var(--border);
+            font-size: 1rem;
+            color: var(--text);
+            background: #f8fafc;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+        input::placeholder {
+            color: var(--text-muted);
+        }
+        .alert {
+            padding: 16px 20px;
+            border-radius: 12px;
+            border-left: 4px solid;
+            margin-bottom: 20px;
+        }
+        .alert-error {
+            background: #fef2f2;
+            border-color: #ef4444;
+            color: #7f1d1d;
+        }
+        .alert-info {
             background: #eff6ff;
-            border: 1px solid #dbeafe;
-            color: #334155;
+            border-color: var(--accent);
+            color: #1e40af;
         }
-        .button {
+        .action-group {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 16px;
+            align-items: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #eff6ff 0%, #f0f9ff 100%);
+            border-radius: 14px;
+            border: 1px solid var(--accent-light);
+        }
+        .action-text {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+        button[type="submit"] {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 14px 32px;
+            font-size: 1.05rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+            white-space: nowrap;
+        }
+        button[type="submit"]:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4);
+        }
+        button[type="submit"]:active {
+            transform: translateY(0);
+        }
+        .footer-nav {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border);
+        }
+        .nav-link {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            border-radius: 14px;
-            padding: 12px 18px;
-            font-weight: 700;
+            padding: 12px 16px;
+            border-radius: 10px;
             text-decoration: none;
-            border: 1px solid transparent;
-            transition: transform .18s ease, background .18s ease, border-color .18s ease, color .18s ease;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+            border: 1.5px solid transparent;
         }
-        .button.secondary {
+        .nav-link.secondary {
             background: #f8fafc;
-            color: #2563eb;
-            border-color: rgba(37,99,235,.16);
+            color: var(--accent);
+            border-color: var(--border);
         }
-        .button.secondary:hover {
-            background: #eff6ff;
+        .nav-link.secondary:hover {
+            background: var(--accent-light);
+            border-color: var(--accent);
         }
-        .button.primary {
-            background: #2563eb;
+        .nav-link.primary {
+            background: var(--accent);
             color: white;
         }
-        .button.primary:hover {
+        .nav-link.primary:hover {
             background: #1d4ed8;
         }
-        .footer-links {
-            margin-top:18px;
-            display:flex;
-            flex-wrap:wrap;
-            gap:12px;
-            color: var(--muted);
-            font-size: .95rem;
-        }
-        .footer-links a { color: var(--accent); text-decoration:none; }
-        .footer-links a:hover { text-decoration:none; }
-        @media (max-width: 700px) {
-            .row, .row-small { grid-template-columns: 1fr; }
-            .header { text-align:center; }
-            .header p { margin: 10px auto 0; }
+        @media (max-width: 768px) {
+            .card {
+                padding: 24px;
+            }
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            .form-row-3 {
+                grid-template-columns: 1fr;
+            }
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            .action-group {
+                grid-template-columns: 1fr;
+            }
+            button[type="submit"] {
+                width: 100%;
+            }
+            .footer-nav {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
-    <link rel="stylesheet" href="/static/theme.css">
+    <link rel="stylesheet" href="{% static 'theme.css' %}">
 </head>
 <body>
-    <div class="card">
-        <div class="header">
-            <div>
-                <h2>Predict Flight Price</h2>
-                <p>Use a clean route form to estimate costs and compare predicted fares with the market average.</p>
+    <div class="container">
+        <div class="card">
+            <div class="header">
+                <h1>✈️ Flight Price Prediction</h1>
+                <p>Enter your travel details below to get an accurate price estimate based on our trained ML model.</p>
             </div>
-        </div>
-        <form method="post" action="/PredictPricesAction">
-            {% csrf_token %}
-            {% if messages %}
-            <div class="note" style="background:#fee2e2; border-color:#fecaca; color:#7f1d1d;">
-                {% for message in messages %}
-                    {{ message }}
-                {% endfor %}
-            </div>
-            {% endif %}
-            <div class="row">
-                <div class="field">
-                    <label for="t4">Airline</label>
-                    <select id="t4" name="t4" required>
-                        <option value="">Select airline</option>
-                        {% for airline in airline_options %}
-                            <option value="{{ airline }}" {% if selected_airline == airline %}selected{% endif %}>{{ airline }}</option>
-                        {% endfor %}
-                    </select>
+
+            <form method="post" action="/PredictPricesAction">
+                {% csrf_token %}
+
+                {% if messages %}
+                <div class="alert alert-error">
+                    {% for message in messages %}
+                        <strong>{{ message }}</strong>
+                    {% endfor %}
                 </div>
-                <div class="field">
-                    <label for="t5">Source city</label>
-                    <select id="t5" name="t5" required>
-                        <option value="">Select source city</option>
-                        {% for city in city_options %}
-                            <option value="{{ city }}" {% if selected_source == city %}selected{% endif %}>{{ city }}</option>
-                        {% endfor %}
-                    </select>
+                {% endif %}
+
+                <!-- Route Details Section -->
+                <div class="section">
+                    <div class="section-title">Route Details</div>
+                    <div class="form-row-3">
+                        <div class="form-group">
+                            <label for="t4">Airline</label>
+                            <select id="t4" name="t4" required>
+                                <option value="">Choose an airline...</option>
+                                {% for airline in airline_options %}
+                                    <option value="{{ airline }}" {% if selected_airline == airline %}selected{% endif %}>{{ airline }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="t5">Source City</label>
+                            <select id="t5" name="t5" required>
+                                <option value="">Choose source...</option>
+                                {% for city in city_options %}
+                                    <option value="{{ city }}" {% if selected_source == city %}selected{% endif %}>{{ city }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="t6">Destination City</label>
+                            <select id="t6" name="t6" required>
+                                <option value="">Choose destination...</option>
+                                {% for city in city_options %}
+                                    <option value="{{ city }}" {% if selected_dest == city %}selected{% endif %}>{{ city }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
                 </div>
-                <div class="field">
-                    <label for="t6">Destination city</label>
-                    <select id="t6" name="t6" required>
-                        <option value="">Select destination city</option>
-                        {% for city in city_options %}
-                            <option value="{{ city }}" {% if selected_dest == city %}selected{% endif %}>{{ city }}</option>
-                        {% endfor %}
-                    </select>
+
+                <!-- Travel Date Section -->
+                <div class="section">
+                    <div class="section-title">Travel Date</div>
+                    <div class="form-row-3">
+                        <div class="form-group">
+                            <label for="day">Day</label>
+                            <select id="day" name="t1" required>
+                                {% for d in day_range %}
+                                    <option value="{{ d }}"{% if d == selected_day %} selected{% endif %}>{{ d }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="month">Month</label>
+                            <select id="month" name="t2" required>
+                                {% for m in month_range %}
+                                    <option value="{{ m }}"{% if m == selected_month %} selected{% endif %}>{{ m }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="year">Year</label>
+                            <select id="year" name="t3" required>
+                                {% for y in year_range %}
+                                    <option value="{{ y }}"{% if y == selected_year %} selected{% endif %}>{{ y }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <div class="row-small">
-                <div class="field">
-                    <label>Travel day</label>
-                    <select name="t1" required>
-                        {% for d in day_range %}
-                            <option value="{{ d }}"{% if d == selected_day %} selected{% endif %}>{{ d }}</option>
-                        {% endfor %}
-                    </select>
+
+                <!-- Flight Preferences Section -->
+                <div class="section">
+                    <div class="section-title">Flight Preferences</div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="stops">Number of Stops</label>
+                            <select id="stops" name="stops" required>
+                                <option value="">Select stops...</option>
+                                {% for stop in stops_options %}
+                                    <option value="{{ stop }}" {% if selected_stops == stop %}selected{% endif %}>{{ stop }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="travel_class">Travel Class</label>
+                            <select id="travel_class" name="travel_class" required>
+                                <option value="">Select class...</option>
+                                {% for travel_class in travel_class_options %}
+                                    <option value="{{ travel_class }}" {% if selected_travel_class == travel_class %}selected{% endif %}>{{ travel_class }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
                 </div>
-                <div class="field">
-                    <label>Travel month</label>
-                    <select name="t2" required>
-                        {% for m in month_range %}
-                            <option value="{{ m }}"{% if m == selected_month %} selected{% endif %}>{{ m }}</option>
-                        {% endfor %}
-                    </select>
+
+                <!-- Info Box -->
+                <div class="alert alert-info">
+                    <strong>💡 Tip:</strong> Use common city names like Delhi, Mumbai, Bangalore, Chennai, Hyderabad, or Kolkata for best results. The model will estimate prices even for less common routes using market benchmarks.
                 </div>
-                <div class="field">
-                    <label>Travel year</label>
-                    <select name="t3" required>
-                        {% for y in year_range %}
-                            <option value="{{ y }}"{% if y == selected_year %} selected{% endif %}>{{ y }}</option>
-                        {% endfor %}
-                    </select>
+
+                <!-- Action Group -->
+                <div class="action-group">
+                    <div class="action-text">
+                        Ready to get an accurate price estimate? Click the button to see your prediction.
+                    </div>
+                    <button type="submit">Get Estimate</button>
                 </div>
-            </div>
-            <div class="row">
-                <div class="field">
-                    <label for="stops">Stops</label>
-                    <select id="stops" name="stops" required>
-                        <option value="">Select stops</option>
-                        {% for stop in stops_options %}
-                            <option value="{{ stop }}" {% if selected_stops == stop %}selected{% endif %}>{{ stop }}</option>
-                        {% endfor %}
-                    </select>
+
+                <!-- Footer Navigation -->
+                <div class="footer-nav">
+                    <a href="/" class="nav-link secondary">← Home</a>
+                    <a href="/DatasetCollection" class="nav-link secondary">View Dataset</a>
+                    <a href="/ModelReport" class="nav-link secondary">Model Report</a>
+                    <a href="/TrainML" class="nav-link primary">Retrain Model</a>
                 </div>
-                <div class="field">
-                    <label for="travel_class">Travel class</label>
-                    <select id="travel_class" name="travel_class" required>
-                        <option value="">Select class</option>
-                        {% for travel_class in travel_class_options %}
-                            <option value="{{ travel_class }}" {% if selected_travel_class == travel_class %}selected{% endif %}>{{ travel_class }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="field">
-                    <label>&nbsp;</label>
-                    <div class="note" style="margin:0; min-height: 48px; display:flex; align-items:center;">Route profile helps align pricing with the selected stop pattern and cabin type.</div>
-                </div>
-            </div>
-            <div class="note">
-                Tip: For best results, enter common city names such as Delhi, Mumbai, Banglore, Chennai, Hyderabad or Kolkata. If the route is not present in the current sample dataset, the app will still estimate using the closest market benchmark.
-            </div>
-            <button type="submit">Get price estimate</button>
-        </form>
-        <div class="footer-links" style="display:flex; flex-wrap:wrap; gap:12px; margin-top:22px;">
-            <a class="button secondary" href="/index.html">Back to home</a>
-            <a class="button secondary" href="/DatasetCollection">See sample data</a>
-            <a class="button secondary" href="/ModelReport">View model report</a>
-            <a class="button primary" href="/TrainML">Train/refresh model</a>
+            </form>
         </div>
     </div>
 </body>
